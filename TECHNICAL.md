@@ -462,7 +462,3 @@ MIT License - See \[LICENSE](LICENSE) for details.
 
 ---
 
-
-
-\*\*Built with ❤️ by Sushmita\*\*
-
