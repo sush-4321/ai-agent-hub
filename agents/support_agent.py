@@ -3,9 +3,6 @@
 import json
 from agents.base_agent import BaseAgent
 from typing import Dict, Any
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.sentiment_analyzer import SentimentAnalyzer
 
 class SupportAgent(BaseAgent):
@@ -19,6 +16,7 @@ class SupportAgent(BaseAgent):
             'urgent', 'broken', 'defective', 'not working'
         ]
         self.escalation_count = 0
+        self.sentiment_analyzer = SentimentAnalyzer()
     
     def _load_faqs(self) -> Dict:
         """Load FAQ database"""

@@ -1,6 +1,5 @@
 """
-AI Agent Hub - Main Streamlit Application
-Sales, Marketing & Support Intelligence
+AI Agent Hub - Light Theme Version
 """
 
 import streamlit as st
@@ -11,32 +10,18 @@ from agents.analytics_agent import AnalyticsAgent
 from datetime import datetime
 import time
 import json
-
-# -------------------------
-# NEW: Conversation summarizer
-# -------------------------
 from utils.summarizer import ConversationSummarizer
 
-# -------------------------
-# Page configuration
-# -------------------------
-st.set_page_config(
-    page_title="AI Agent Hub",
-    page_icon="🤖",
-    layout="wide"
-)
+# Page config
+st.set_page_config(page_title="AI Agent Hub", page_icon="🤖", layout="wide")
 
-# -------------------------
 # Initialize session state
-# -------------------------
 if 'messages' not in st.session_state:
     st.session_state.messages = []
 if 'active_agent' not in st.session_state:
     st.session_state.active_agent = 'support'
 
-# -------------------------
-# Initialize agents
-# -------------------------
+# Load agents
 @st.cache_resource
 def load_agents():
     return {
@@ -48,28 +33,63 @@ def load_agents():
 
 agents = load_agents()
 
-# -------------------------
-# Custom CSS
-# -------------------------
+# Simple CSS for better visibility
 st.markdown("""
 <style>
+    /* Main header */
     .main-header {
         text-align: center;
-        padding: 2rem;
+        padding: 2.5rem;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
-    .stButton button {
-        width: 100%;
+    
+    .main-header h1 {
+        color: white !important;
+        font-size: 2.8rem;
+        margin: 0;
+        font-weight: 800;
+    }
+    
+    .main-header p {
+        color: white !important;
+        font-size: 1.2rem;
+        margin: 0.5rem 0 0 0;
+    }
+    
+    /* Larger buttons */
+    .stButton > button {
+        min-height: 100px !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        padding: 1.5rem !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Subheaders with color */
+    .stMarkdown h2, .stMarkdown h3 {
+        color: #667eea !important;
+    }
+    
+    /* Metrics with better contrast */
+    [data-testid="stMetricLabel"] {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #262730 !important;
+    }
+    
+    [data-testid="stMetricValue"] {
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        color: #667eea !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------
 # Header
-# -------------------------
 st.markdown("""
 <div class="main-header">
     <h1>🤖 AI Agent Hub</h1>
@@ -77,131 +97,123 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# -------------------------
 # Agent selection
-# -------------------------
+st.markdown("## 🎯 Select Your AI Agent")
+
 col1, col2, col3, col4 = st.columns(4)
-agent_info = {
-    'support': {'name': '💬 Support Assistant', 'desc': 'FAQs & Escalations', 'col': col1},
-    'product': {'name': '🛍️ Product Recommender', 'desc': 'Smart Suggestions', 'col': col2},
-    'social': {'name': '📱 Social Media Agent', 'desc': 'Content Generation', 'col': col3},
-    'analytics': {'name': '📊 Analytics Dashboard', 'desc': 'Insights & Metrics', 'col': col4}
+
+agents_info = {
+    'support': ('💬 Support Assistant', 'FAQs & Escalations', col1),
+    'product': ('🛍️ Product Recommender', 'Smart Suggestions', col2),
+    'social': ('📱 Social Media Agent', 'Content Generation', col3),
+    'analytics': ('📊 Analytics Dashboard', 'Insights & Metrics', col4)
 }
 
-for agent_id, info in agent_info.items():
-    with info['col']:
-        if st.button(
-            f"{info['name']}\n{info['desc']}",
-            key=agent_id,
-            use_container_width=True,
-            type="primary" if st.session_state.active_agent == agent_id else "secondary"
-        ):
+for agent_id, (name, desc, col) in agents_info.items():
+    with col:
+        button_type = "primary" if st.session_state.active_agent == agent_id else "secondary"
+        if st.button(f"**{name}**\n\n{desc}", key=f"agent_{agent_id}", type=button_type, use_container_width=True):
             st.session_state.active_agent = agent_id
-            st.session_state.messages = []
             st.rerun()
 
-st.markdown("---")
+st.divider()
 
-# -------------------------
-# Display chat messages
-# -------------------------
+# Display messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
-        # Show sentiment if available
-        if "data" in message and "sentiment" in message["data"]:
+        
+        if "data" in message and message["data"].get("sentiment"):
             sentiment = message["data"]["sentiment"]
-            st.caption(f"{sentiment['emoji']} Sentiment: {sentiment['sentiment']} (Score: {sentiment['score']})")
-
-        # Show response time if available
+            st.caption(f"{sentiment['emoji']} **Sentiment:** {sentiment['sentiment']} | **Score:** {sentiment['score']}")
+        
         if "response_time_ms" in message:
-            st.caption(f"⚡ Response time: {message['response_time_ms']}ms")
-
-        # Show additional data (products / analytics / tickets)
+            st.caption(f"⚡ **Response time:** {message['response_time_ms']}ms")
+        
         if "data" in message:
             data = message["data"]
-
+            
+            # Product recommendations
             if data.get("type") == "recommendations":
-                st.markdown("---")
+                st.divider()
+                st.markdown("### 🛍️ Recommended Products")
                 for product in data.get("products", []):
-                    c1, c2 = st.columns([3, 1])
-                    with c1:
-                        st.markdown(f"**{product['name']}**")
-                        st.caption(" | ".join(product.get('features', [])))
-                    with c2:
-                        st.markdown(f"**${product['price']}**")
-                        st.caption(f"⭐ {product.get('rating', 'N/A')}")
-
+                    with st.expander(f"**{product['name']}** - ${product['price']}", expanded=True):
+                        col_a, col_b = st.columns([2, 1])
+                        with col_a:
+                            st.write(f"**Category:** {product['category']}")
+                            st.write(f"**Features:** {', '.join(product.get('features', []))}")
+                        with col_b:
+                            st.metric("Price", f"${product['price']}")
+                            st.write(f"**Rating:** {'⭐' * int(product.get('rating', 0))}")
+            
+            # Social media content
+            elif data.get("type") == "social_content":
+                st.divider()
+                st.markdown("### 📱 Social Media Posts")
+                for idea in data.get("ideas", []):
+                    st.info(f"**{idea.get('platform', 'Platform')} - {idea.get('type', 'Post')}**\n\n{idea['content']}")
+            
+            # Analytics dashboard
             elif data.get("type") == "analytics":
-                st.markdown("---")
+                st.divider()
                 metrics = data.get("metrics", {})
                 agent_type = data.get("agent_type", 'all')
-
+                
                 if agent_type in ['all', 'support']:
-                    st.subheader("💬 Support Metrics")
+                    st.markdown("### 💬 Support Metrics")
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
-                        st.metric("Total Queries", metrics['support']['total_queries'])
+                        st.metric("**Total Queries**", metrics['support']['total_queries'])
                     with c2:
-                        st.metric("Resolved", metrics['support']['resolved'])
+                        st.metric("**Resolved**", metrics['support']['resolved'])
                     with c3:
-                        st.metric("Avg Response Time", f"{metrics['support']['avg_response_time']}min")
+                        st.metric("**Avg Response Time**", f"{metrics['support']['avg_response_time']}min")
                     with c4:
-                        st.metric("Satisfaction", f"{metrics['support']['satisfaction_rate']}%")
-
+                        st.metric("**Satisfaction**", f"{metrics['support']['satisfaction_rate']}%")
+                
                 if agent_type in ['all', 'products']:
-                    st.subheader("🛍️ Product Metrics")
+                    st.markdown("### 🛍️ Product Metrics")
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
-                        st.metric("Recommendations", metrics['products']['recommendations_made'])
+                        st.metric("**Recommendations**", metrics['products']['recommendations_made'])
                     with c2:
-                        st.metric("Conversion Rate", f"{metrics['products']['conversion_rate']}%")
+                        st.metric("**Conversion Rate**", f"{metrics['products']['conversion_rate']}%")
                     with c3:
-                        st.metric("Avg Order Value", f"${metrics['products']['avg_order_value']}")
+                        st.metric("**Avg Order Value**", f"${metrics['products']['avg_order_value']}")
                     with c4:
-                        st.metric("Top Category", metrics['products']['top_category'])
-
+                        st.metric("**Top Category**", metrics['products']['top_category'])
+                
                 if agent_type in ['all', 'social']:
-                    st.subheader("📱 Social Media Metrics")
+                    st.markdown("### 📱 Social Media Metrics")
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
-                        st.metric("Posts Generated", metrics['social']['posts_generated'])
+                        st.metric("**Posts Generated**", metrics['social']['posts_generated'])
                     with c2:
-                        st.metric("Engagement Rate", f"{metrics['social']['engagement_rate']}%")
+                        st.metric("**Engagement Rate**", f"{metrics['social']['engagement_rate']}%")
                     with c3:
-                        st.metric("Reach", f"{metrics['social']['reach']:,}")
+                        st.metric("**Reach**", f"{metrics['social']['reach']:,}")
                     with c4:
-                        st.metric("Best Performing", metrics['social']['best_performing'])
-
+                        st.metric("**Best Performing**", metrics['social']['best_performing'])
+            
             if data.get("escalate"):
                 st.warning(f"🎫 **Ticket Created:** {data.get('ticket_number', 'N/A')}")
 
-# -------------------------
-# Chat input with typing animation
-# -------------------------
-if prompt := st.chat_input("Type your message..."):
-    # Add user message
+# Chat input
+if prompt := st.chat_input("💬 Type your message here..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    # Placeholder for typing animation
+    
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
-        typing_messages = ["🤖 Thinking", "🤖 Thinking.", "🤖 Thinking..", "🤖 Thinking..."]
-        for msg in typing_messages:
+        for msg in ["🤖 Thinking", "🤖 Thinking.", "🤖 Thinking..", "🤖 Thinking..."]:
             message_placeholder.markdown(msg)
             time.sleep(0.2)
-
-        # Get response
+        
         start_time = time.time()
         response = agents[st.session_state.active_agent].process_query(prompt)
-        end_time = time.time()
-        response_time = round((end_time - start_time) * 1000, 2)
-
-        # Show actual response
+        response_time = round((time.time() - start_time) * 1000, 2)
         message_placeholder.markdown(response['response'])
-
-    # Add assistant message to history
+    
     st.session_state.messages.append({
         "role": "assistant",
         "content": response['response'],
@@ -210,26 +222,45 @@ if prompt := st.chat_input("Type your message..."):
     })
     st.rerun()
 
-# -------------------------
-# Smart suggestions
-# -------------------------
-st.markdown("### 💡 Suggested Queries")
+# Suggested queries
+st.divider()
+st.markdown("## 💡 Quick Actions - Try These Queries")
+
 suggestions = {
-    'support': ["What's your return policy?", "How can I track my order?", "This product arrived damaged", "What payment methods do you accept?"],
-    'product': ["Show me budget electronics", "Recommend premium products", "What's in the fashion category?", "Show me top-rated items"],
-    'social': ["Create a product launch post", "Give me engagement ideas", "Write a sale promotion", "Generate contest content"],
-    'analytics': ["Show overall metrics", "Support agent performance", "Product recommendation stats", "Social media engagement"]
+    'support': [
+        "📦 What's your return policy?",
+        "🚚 How can I track my order?",
+        "⚠️ This product arrived damaged",
+        "💳 What payment methods do you accept?"
+    ],
+    'product': [
+        "💻 Show me budget electronics",
+        "⭐ Recommend premium products",
+        "👔 What's in the fashion category?",
+        "🔥 Show me top-rated items"
+    ],
+    'social': [
+        "🚀 Create a product launch post",
+        "💬 Give me engagement ideas",
+        "💰 Write a sale promotion",
+        "🎁 Generate contest content"
+    ],
+    'analytics': [
+        "📊 Show overall metrics",
+        "💬 Support agent performance",
+        "🛍️ Product recommendation stats",
+        "📱 Social media engagement"
+    ]
 }
 
 cols = st.columns(2)
 for idx, suggestion in enumerate(suggestions[st.session_state.active_agent]):
     with cols[idx % 2]:
-        if st.button(f"💬 {suggestion}", key=f"suggest_{idx}", use_container_width=True):
+        if st.button(suggestion, key=f"quick_{idx}", use_container_width=True):
             st.session_state.messages.append({"role": "user", "content": suggestion})
             start_time = time.time()
             response = agents[st.session_state.active_agent].process_query(suggestion)
-            end_time = time.time()
-            response_time = round((end_time - start_time) * 1000, 2)
+            response_time = round((time.time() - start_time) * 1000, 2)
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": response['response'],
@@ -238,84 +269,63 @@ for idx, suggestion in enumerate(suggestions[st.session_state.active_agent]):
             })
             st.rerun()
 
-st.markdown("---")
-
-# -------------------------
-# Sidebar: Statistics, Summary, Export, Theme
-# -------------------------
+# Sidebar
 with st.sidebar:
-    st.markdown("## 📊 Statistics")
-    st.metric("Total Messages", len(st.session_state.messages))
-    st.metric("Active Agent", agent_info[st.session_state.active_agent]['name'])
-
-    # -------------------------
-    # Conversation Summary
-    # -------------------------
+    st.markdown("# 📊 Dashboard")
+    
+    st.metric("📨 Total Messages", len(st.session_state.messages))
+    
+    active_names = {
+        'support': '💬 Support Assistant',
+        'product': '🛍️ Product Recommender',
+        'social': '📱 Social Media Agent',
+        'analytics': '📊 Analytics Dashboard'
+    }
+    st.metric("🤖 Active Agent", active_names[st.session_state.active_agent])
+    
     if st.session_state.messages:
-        st.markdown("---")
-        st.markdown("### 📝 Conversation Summary")
+        st.divider()
+        st.markdown("## 📝 Session Summary")
         summary = ConversationSummarizer.summarize(st.session_state.messages)
-
-        st.metric("User Messages", summary['user_messages'])
-        st.metric("Bot Messages", summary['bot_messages'])
-
+        
+        st.metric("👤 User Messages", summary['user_messages'])
+        st.metric("🤖 Bot Messages", summary['bot_messages'])
+        
         if summary['topics']:
-            st.write("**Topics Discussed:**")
+            st.markdown("**📌 Topics Discussed:**")
             for topic in summary['topics']:
                 st.write(f"• {topic.title()}")
-
-        st.write(f"**Overall Sentiment:** {summary['sentiment_overview']}")
-
-    # -------------------------
-    # Clear chat
-    # -------------------------
-    if st.button("🗑️ Clear Chat", use_container_width=True):
+        
+        st.markdown(f"**😊 Overall Sentiment:** {summary['sentiment_overview']}")
+    
+    st.divider()
+    
+    if st.button("🗑️ Clear Chat History", use_container_width=True, type="secondary"):
         st.session_state.messages = []
         st.rerun()
-
-    # -------------------------
-    # Export data
-    # -------------------------
-    st.markdown("---")
-    st.markdown("### 📥 Export Data")
-    if st.button("📄 Export Chat History", use_container_width=True):
+    
+    st.divider()
+    st.markdown("## 📥 Export Data")
+    
+    if st.button("📄 Export Chat", use_container_width=True):
         if st.session_state.messages:
             export_data = {
                 'agent': st.session_state.active_agent,
                 'timestamp': datetime.now().isoformat(),
+                'total_messages': len(st.session_state.messages),
                 'messages': st.session_state.messages
             }
             json_str = json.dumps(export_data, indent=2)
             st.download_button(
                 label="💾 Download JSON",
                 data=json_str,
-                file_name=f"chat_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                mime="application/json"
+                file_name=f"ai_agent_chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
             )
         else:
-            st.info("No messages to export yet!")
-
-    # -------------------------
-    # Theme toggle
-    # -------------------------
-    st.markdown("---")
-    st.markdown("### 🎨 Settings")
-    theme = st.selectbox("Theme", ["Dark", "Light", "Auto"], index=0)
-    if theme == "Dark":
-        st.markdown("""
-        <style>
-        .stApp {
-            background-color: #0e1117;
-            color: #fafafa;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-    elif theme == "Light":
-        st.markdown("""
-        <style>
-        .stApp {
-            background-color: #ffffff;
-            color: #0c0c0c;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+            st.info("💡 Start a conversation to export!")
+    
+    st.divider()
+    st.caption("🤖 AI Agent Hub v1.0")
+    st.caption("Built with Streamlit")
