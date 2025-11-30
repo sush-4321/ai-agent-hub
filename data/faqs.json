@@ -1,0 +1,32 @@
+{
+  "shipping": {
+    "question": "What are your shipping options?",
+    "answer": "We offer free shipping on orders over $50. Standard shipping takes 5-7 business days, Express takes 2-3 business days.",
+    "category": "logistics",
+    "keywords": ["ship", "delivery", "freight", "mail"]
+  },
+  "return": {
+    "question": "What is your return policy?",
+    "answer": "You can return any item within 30 days of purchase. Items must be unused and in original packaging. Refunds are processed within 5-7 business days.",
+    "category": "policy",
+    "keywords": ["return", "refund", "send back"]
+  },
+  "payment": {
+    "question": "What payment methods do you accept?",
+    "answer": "We accept all major credit cards, PayPal, Apple Pay, Google Pay. All transactions are secured with SSL encryption.",
+    "category": "payment",
+    "keywords": ["pay", "credit card", "payment"]
+  },
+  "track": {
+    "question": "How can I track my order?",
+    "answer": "You can track your order using the tracking number sent to your email. Visit our Order Tracking page.",
+    "category": "logistics",
+    "keywords": ["track", "where is", "status"]
+  },
+  "warranty": {
+    "question": "Do your products have a warranty?",
+    "answer": "All products come with a 1-year manufacturer warranty. Extended warranties available at checkout.",
+    "category": "product",
+    "keywords": ["warranty", "guarantee", "coverage"]
+  }
+}

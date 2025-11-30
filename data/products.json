@@ -1,0 +1,71 @@
+{
+  "electronics": [
+    {
+      "id": "ELEC001",
+      "name": "Wireless Earbuds Pro",
+      "price": 129.99,
+      "category": "audio",
+      "features": ["Noise Cancellation", "24hr battery", "Waterproof"],
+      "rating": 4.5,
+      "stock": 156
+    },
+    {
+      "id": "ELEC002",
+      "name": "Smart Watch Ultra",
+      "price": 399.99,
+      "category": "wearable",
+      "features": ["GPS tracking", "Heart rate monitor", "Sleep tracking"],
+      "rating": 4.7,
+      "stock": 89
+    },
+    {
+      "id": "ELEC003",
+      "name": "Portable Charger 20000mAh",
+      "price": 45.99,
+      "category": "accessories",
+      "features": ["Fast charging", "Dual USB ports", "LED display"],
+      "rating": 4.6,
+      "stock": 234
+    }
+  ],
+  "fashion": [
+    {
+      "id": "FASH001",
+      "name": "Premium Leather Jacket",
+      "price": 249.99,
+      "category": "outerwear",
+      "features": ["Genuine leather", "Slim fit", "YKK zippers"],
+      "rating": 4.8,
+      "stock": 45
+    },
+    {
+      "id": "FASH002",
+      "name": "Designer Sneakers",
+      "price": 159.99,
+      "category": "footwear",
+      "features": ["Breathable mesh", "Cushioned sole", "Lightweight"],
+      "rating": 4.6,
+      "stock": 234
+    }
+  ],
+  "home": [
+    {
+      "id": "HOME001",
+      "name": "Smart Coffee Maker",
+      "price": 179.99,
+      "category": "kitchen",
+      "features": ["App-controlled", "Programmable", "Auto-clean"],
+      "rating": 4.4,
+      "stock": 92
+    },
+    {
+      "id": "HOME002",
+      "name": "Robot Vacuum Cleaner",
+      "price": 299.99,
+      "category": "cleaning",
+      "features": ["Auto-charging", "Smart mapping", "App control"],
+      "rating": 4.7,
+      "stock": 67
+    }
+  ]
+}

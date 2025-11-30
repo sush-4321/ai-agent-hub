@@ -1,0 +1,17 @@
+{
+  "product_launch": [
+    "?? Introducing {product}! Experience {feature} like never before. #NewArrival #Innovation",
+    "? The wait is over! {product} is here. Limited stock! ?? #Launch #Exclusive",
+    "?? Big reveal! {product} with {feature}. Shop now! #GameChanger #Shopping"
+  ],
+  "engagement": [
+    "?? What's your favorite {category}? Tell us below! ?? #Community #Engagement",
+    "?? GIVEAWAY! Follow, like, tag 3 friends to win {product}! #Contest #Win",
+    "?? Share your {product} photos with #{brand}Story! #UGC #Community"
+  ],
+  "promotional": [
+    "? FLASH SALE! {discount}% OFF {category}. Use code: {code} #Sale #Deals",
+    "?? Weekend Special: Buy 2, Get 1 FREE! Stock up now! #WeekendDeal #BOGO",
+    "?? Up to {discount}% off storewide! Don't miss out! #BigSale #Savings"
+  ]
+}
