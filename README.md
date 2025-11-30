@@ -58,6 +58,42 @@ A powerful multi-agent AI system built with Python and Streamlit for automating 
 
 
 
+\## 📸 Screenshots
+
+
+
+\### Main Interface
+
+!\[Screenshot1](screenshots/Screenshot1.png)
+
+\*Multi-agent dashboard with Support, Product, and Social Media agents\*
+
+
+
+\### Support Assistant in Action
+
+!\[Screenshot2](screenshots/Screenshot2.png)
+
+\*Automated FAQ handling with intelligent escalation\*
+
+
+
+\### Product Recommendations
+
+!\[Screenshot3](screenshots/Screenshot3.png)
+
+\*Smart product suggestions with ratings and pricing\*
+
+
+
+\### Social Media Content Generation
+
+!\[Screenshot4](screenshots/Screenshot4.png)
+
+\*AI-powered content ideas for engagement and promotions\*
+
+
+
 \## 🚀 Quick Start
 
 
