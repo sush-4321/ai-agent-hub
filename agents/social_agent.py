@@ -22,6 +22,8 @@ class SocialAgent(BaseAgent):
                 return json.load(f)
         except FileNotFoundError:
             return self._get_default_templates()
+        except json.JSONDecodeError:
+            return self._get_default_templates()
     
     def _get_default_templates(self) -> Dict:
         """Return default templates if file not found"""
@@ -105,6 +107,26 @@ class SocialAgent(BaseAgent):
                     "content": "💡 Pro Tip!\n\nDid you know you can get more out of your product with this simple trick? Check it out!\n\n#ProTip #Tutorial #HowTo",
                     "type": "Educational"
                 }
+            ],
+            "contest": [
+                {
+                    "id": 1,
+                    "platform": "Instagram",
+                    "content": "🎉 GIVEAWAY TIME! 🎉\n\nWin amazing prizes! Here's how to enter:\n1️⃣ Follow us\n2️⃣ Like this post\n3️⃣ Tag 3 friends\n\nWinner announced next week! 🏆\n\n#Giveaway #Contest #WinBig",
+                    "type": "Contest"
+                },
+                {
+                    "id": 2,
+                    "platform": "Facebook",
+                    "content": "🎁 CONTEST ALERT! 🎁\n\nEnter to win exclusive prizes! It's easy:\n✅ Like our page\n✅ Share this post\n✅ Comment why you love our products\n\nGood luck! 🍀\n\n#Contest #Giveaway #Winners",
+                    "type": "Contest"
+                },
+                {
+                    "id": 3,
+                    "platform": "Twitter",
+                    "content": "🏆 TWITTER GIVEAWAY! 🏆\n\nRT + Follow to enter!\n\nWe're giving away amazing prizes to 3 lucky winners!\n\nEnds this Friday! ⏰\n\n#Giveaway #Contest #FreeStuff",
+                    "type": "Contest"
+                }
             ]
         }
     
@@ -115,22 +137,63 @@ class SocialAgent(BaseAgent):
         # Analyze sentiment
         sentiment = self.sentiment_analyzer.analyze(query)
         
-        # Determine content type
-        if any(word in query_lower for word in ['launch', 'announce', 'new product', 'introduce']):
+        # Determine content type with robust fallback
+        if any(word in query_lower for word in ['launch', 'announce', 'new product', 'introduce', 'release']):
             content_type = 'launch'
             title = '🚀 Product Launch Ideas'
-        elif any(word in query_lower for word in ['engagement', 'interact', 'community', 'question']):
+        elif any(word in query_lower for word in ['engagement', 'interact', 'community', 'question', 'engage']):
             content_type = 'engagement'
             title = '💬 Engagement Content Ideas'
-        elif any(word in query_lower for word in ['sale', 'promo', 'discount', 'offer', 'deal']):
+        elif any(word in query_lower for word in ['sale', 'promo', 'discount', 'offer', 'deal', 'promotion']):
             content_type = 'promotion'
             title = '🔥 Promotional Content Ideas'
+        elif any(word in query_lower for word in ['contest', 'giveaway', 'competition', 'win', 'prize']):
+            content_type = 'contest'
+            title = '🎁 Contest & Giveaway Ideas'
         else:
             content_type = 'general'
             title = '✨ Content Ideas'
         
-        # Get templates
-        ideas = self.templates.get(content_type, self.templates['general'])
+        # Get templates with SAFE fallback chain
+        ideas = None
+        
+        # Try to get the requested content type
+        if content_type in self.templates:
+            ideas = self.templates[content_type]
+        
+        # Fallback to general if requested type not found
+        if not ideas and 'general' in self.templates:
+            ideas = self.templates['general']
+            title = '✨ General Content Ideas'
+        
+        # Fallback to launch if general not found
+        if not ideas and 'launch' in self.templates:
+            ideas = self.templates['launch']
+            title = '🚀 Product Launch Ideas'
+        
+        # Ultimate fallback - hardcoded content
+        if not ideas:
+            ideas = [
+                {
+                    "id": 1,
+                    "platform": "Multi-Platform",
+                    "content": "✨ Exciting things are happening!\n\nStay tuned for amazing updates coming your way! 🚀\n\n#StayTuned #ComingSoon #Excitement",
+                    "type": "General"
+                },
+                {
+                    "id": 2,
+                    "platform": "Multi-Platform",
+                    "content": "💙 Thank you for being part of our community!\n\nYour support means everything to us. Together, we're building something special! 🌟\n\n#Community #ThankYou #Grateful",
+                    "type": "Appreciation"
+                },
+                {
+                    "id": 3,
+                    "platform": "Multi-Platform",
+                    "content": "🌟 What's your favorite thing about our brand?\n\nDrop a comment below and let us know! We love hearing from you! 💬\n\n#Community #Engagement #YourOpinion",
+                    "type": "Engagement"
+                }
+            ]
+            title = '✨ Content Ideas'
         
         response = f"{title}\n\nHere are 3 ready-to-use social media posts:"
         
