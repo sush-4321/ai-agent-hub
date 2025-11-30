@@ -9,8 +9,14 @@ class SocialAgent(BaseAgent):
     """Social Media Content Generator"""
     
     def __init__(self):
-        super().__init__("SocialAgent")
-        self.templates = self._load_templates()
+    super().__init__("SupportAgent")
+    self.faqs = self._load_faqs()
+    self.complex_keywords = [
+        'complaint', 'damaged', 'refund', 'speak to manager',
+        'urgent', 'broken', 'defective', 'not working'
+    ]
+    self.escalation_count = 0
+    self.sentiment_analyzer = SentimentAnalyzer()  # ADD THIS LINE
     
     def _load_templates(self) -> Dict:
         """Load social media templates"""

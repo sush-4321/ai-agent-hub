@@ -3,6 +3,10 @@
 import json
 from agents.base_agent import BaseAgent
 from typing import Dict, Any
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.sentiment_analyzer import SentimentAnalyzer
 
 class SupportAgent(BaseAgent):
     """Support Assistant for handling customer queries"""
